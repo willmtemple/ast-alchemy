@@ -166,6 +166,23 @@ const defaultAlchemyOptions: AlchemyOptions = {
   jsx: false,
 };
 
+/**
+ * Information about the syntactic form of the call.
+ */
+export interface AlchemyResponse {
+  /**
+   * The AST of the Call Expression that resulted in the current execution.
+   */
+  expr: ts.CallExpression;
+  /**
+   * The virtual source file used in parsing `expr`.
+   *
+   * This is useful for getting expression text and other methods in the TypeScript
+   * API that may require a SourceFile instance.
+   */
+  sourceFile: ts.SourceFile;
+}
+
 export function createAlchemy(alchemyOptions?: Partial<AlchemyOptions>) {
   const options: AlchemyOptions = {
     ...defaultAlchemyOptions,
@@ -211,7 +228,7 @@ export function createAlchemy(alchemyOptions?: Partial<AlchemyOptions>) {
 
   return async function getCallerSyntaxForm(
     depth: number = 3
-  ): Promise<ts.CallExpression> {
+  ): Promise<AlchemyResponse> {
     const caller = getCaller(depth);
 
     const text = await readFragmentToString(caller);
@@ -246,13 +263,16 @@ export function createAlchemy(alchemyOptions?: Partial<AlchemyOptions>) {
     // we know exactly what the shape of this object will be
     const expr = (tree.statements[0] as ts.ExpressionStatement).expression;
 
-    if (expr.kind !== ts.SyntaxKind.CallExpression) {
-      throw new Error(
+    if (!ts.isCallExpression(expr)) {
+      throw new AlchemyError(
         "Expected to find a call expression in stack trace position."
       );
     }
 
-    return expr as ts.CallExpression;
+    return {
+      expr,
+      sourceFile: tree,
+    };
   };
 }
 
