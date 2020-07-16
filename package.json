@@ -2,18 +2,26 @@
   "name": "ast-alchemy",
   "version": "0.1.0",
   "description": "dark magic that allows libraries to process caller ASTs",
+  "homepage": "https://github.com/willmtemple/ast-alchemy",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
+    "build": "tsc",
+    "prebuild": "rimraf dist/",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Will Temple <will@wtemple.net>",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/willmtemple/ast-alchemy.git"
+  },
   "dependencies": {
     "typescript": "~3.9.0"
   },
   "devDependencies": {
     "@types/node": "^14.0.14",
+    "rimraf": "^3.0.2",
     "ts-node": "^8.10.2"
   }
 }
